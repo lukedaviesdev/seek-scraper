@@ -1,50 +1,58 @@
 const puppeteer = require("puppeteer");
-const ObjectsToCsv = require("objects-to-csv");
+const writeToCsv = require("./helpers/writeToCsv");
 const fs = require("fs");
-const scrapeAllJobs = require("./scrapers/scrapeAllJobs");
+const scrapeJobListing = require("./scrapers/scrapeJobListing");
 
 (async () => {
-  console.time("getdevjobs");
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  const date = new Date().toISOString().split("T")[0];
-  const frontEndJobsPerth = await scrapeAllJobs(page, {
+
+  const frontEndJobsPerth = await scrapeJobListing(page, {
     type: "front-end-web-developer",
     location: "All-Perth-WA",
   });
 
-  const frontEndJobsMelbourne = await scrapeAllJobs(page, {
+  const frontEndJobsMelbourne = await scrapeJobListing(page, {
     type: "front-end-web-developer",
     location: "All-Melbourne-VIC",
   });
 
-  const frontEndJobsSydney = await scrapeAllJobs(page, {
+  const frontEndJobsSydney = await scrapeJobListing(page, {
     type: "front-end-web-developer",
     location: "All-Sydney-NSW",
   });
 
-  //CREATES DIR IF DOESNT EXIST
-  const dirs = [
-    "./data-csv/perth",
-    "./data-csv/melbourne",
-    "./data-csv/sydney",
+  const jobDataConfig = [
+    {
+      directory: "./data-csv/perth",
+      type: "front-end",
+      city: "perth",
+      jobListings: frontEndJobsPerth,
+    },
+    {
+      directory: "./data-csv/melbourne",
+      type: "front-end",
+      city: "melbourne",
+      jobListings: frontEndJobsMelbourne,
+    },
+    {
+      directory: "./data-csv/sydney",
+      type: "front-end",
+      city: "sydney",
+      jobListings: frontEndJobsSydney,
+    },
   ];
-  dirs.forEach((dir) => {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+
+  jobDataConfig.forEach((option) => {
+    if (!fs.existsSync(option.directory)) {
+      fs.mkdirSync(option.directory, { recursive: true });
     }
+    writeToCsv({
+      jobsListingArr: option.jobListings,
+      type: option.type,
+      city: option.city,
+    });
   });
 
-  //CREATES AND WRITES CSVs FROM DATA
-  const perthFECsv = new ObjectsToCsv(frontEndJobsPerth);
-  const melbourneFECsv = new ObjectsToCsv(frontEndJobsMelbourne);
-  const sydneyFECsv = new ObjectsToCsv(frontEndJobsSydney);
-
-  await perthFECsv.toDisk(`./data-csv/perth/front-end-perth_${date}.csv`);
-  await melbourneFECsv.toDisk(
-    `./data-csv/melbourne/front-end-melbourne_${date}.csv`
-  );
-  await sydneyFECsv.toDisk(`./data-csv/sydney/front-end-sydney_${date}.csv`);
-  console.timeEnd("getdevjobs");
   await browser.close();
 })();

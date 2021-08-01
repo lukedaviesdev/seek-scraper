@@ -18,7 +18,7 @@ async function getJobDataPerPage(page, url) {
   return data;
 }
 
-async function scrapeAllJobs(page, { type, location }) {
+async function scrapeJobListing(page, { type, location }) {
   const allJobsArr = [];
 
   const pageCount = await getPageCount(
@@ -36,4 +36,4 @@ async function scrapeAllJobs(page, { type, location }) {
   return allJobsArr;
 }
 
-module.exports = scrapeAllJobs;
+module.exports = scrapeJobListing;
