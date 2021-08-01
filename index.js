@@ -7,52 +7,39 @@ const scrapeJobListing = require("./scrapers/scrapeJobListing");
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  const frontEndJobsPerth = await scrapeJobListing(page, {
-    type: "front-end-web-developer",
-    location: "All-Perth-WA",
-  });
-
-  const frontEndJobsMelbourne = await scrapeJobListing(page, {
-    type: "front-end-web-developer",
-    location: "All-Melbourne-VIC",
-  });
-
-  const frontEndJobsSydney = await scrapeJobListing(page, {
-    type: "front-end-web-developer",
-    location: "All-Sydney-NSW",
-  });
-
   const jobDataConfig = [
     {
-      directory: "./data-csv/perth",
-      type: "front-end",
+      type: "front-end-web-developer",
       city: "perth",
-      jobListings: frontEndJobsPerth,
+      searchLocation: "All-Perth-WA",
     },
     {
-      directory: "./data-csv/melbourne",
-      type: "front-end",
+      type: "front-end-web-developer",
       city: "melbourne",
-      jobListings: frontEndJobsMelbourne,
+      searchLocation: "All-Melbourne-VIC",
     },
     {
-      directory: "./data-csv/sydney",
-      type: "front-end",
+      type: "front-end-web-developer",
       city: "sydney",
-      jobListings: frontEndJobsSydney,
+      searchLocation: "All-Sydney-NSW",
     },
   ];
 
-  jobDataConfig.forEach((option) => {
-    if (!fs.existsSync(option.directory)) {
-      fs.mkdirSync(option.directory, { recursive: true });
+  for (let i = 0; i < jobDataConfig.length; i++) {
+    if (!fs.existsSync(`./data-csv/${city}`)) {
+      fs.mkdirSync(`./data-csv/${city}`, { recursive: true });
     }
-    writeToCsv({
-      jobsListingArr: option.jobListings,
-      type: option.type,
-      city: option.city,
+    const jobsListingArr = await scrapeJobListing(page, {
+      type: jobDataConfig[i].type,
+      location: jobDataConfig[i].searchLocation,
     });
-  });
+
+    writeToCsv({
+      jobsListingArr,
+      type: jobDataConfig[i].type,
+      city: jobDataConfig[i].city,
+    });
+  }
 
   await browser.close();
 })();

@@ -34,6 +34,8 @@ const jobInfoPerPageQuery = () => {
       listedOn: "",
     };
 
+    //can add some QA here on the search results,eg skip jobs with titles containing c++
+
     jobObject.title = titleElems[i] && titleElems[i].innerHTML;
     jobObject.company = companyElems[i] && companyElems[i].innerHTML;
     jobObject.description =
