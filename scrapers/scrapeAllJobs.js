@@ -23,13 +23,13 @@ export async function scrapeAllJobs(page, { type, location }) {
 
   const pageCount = await getPageCount(
     page,
-    `https://www.seek.com.au/${type}-web-developer-jobs/in-${location}?salaryrange=100000-999999&salarytype=annual`
+    `https://www.seek.com.au/${type}-jobs/in-${location}?salaryrange=100000-999999&salarytype=annual`
   );
 
   for (let i = 1; i <= pageCount; i++) {
     const jobsPerPage = await getJobDataPerPage(
       page,
-      `https://www.seek.com.au/${type}-web-developer-jobs/in-${location}?page=${i}&salaryrange=100000-999999&salarytype=annual`
+      `https://www.seek.com.au/${type}-jobs/in-${location}?page=${i}&salaryrange=100000-999999&salarytype=annual`
     );
     allJobsArr.push(...jobsPerPage);
   }

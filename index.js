@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const ObjectsToCsv = require("objects-to-csv");
+const fs = require("fs");
 
 import { scrapeAllJobs } from "./scrapers/scrapeAllJobs";
 
@@ -8,19 +9,29 @@ import { scrapeAllJobs } from "./scrapers/scrapeAllJobs";
   const page = await browser.newPage();
 
   const frontEndJobsPerth = await scrapeAllJobs(page, {
-    type: "front-end",
+    type: "front-end-web-developer",
     location: "All-Perth-WA",
   });
+
   const frontEndJobsMelbourne = await scrapeAllJobs(page, {
-    type: "front-end",
+    type: "front-end-web-developer",
     location: "All-Melbourne-VIC",
   });
 
-  const melbourneCsv = new ObjectsToCsv(frontEndJobsMelbourne);
-  const perthCsv = new ObjectsToCsv(frontEndJobsPerth);
+  //CREATES DIR IF DOESNT EXIST
+  const dirs = ["./data-csv/melbourne", "./data-csv/perth"];
+  dirs.forEach((dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
 
-  await melbourneCsv.toDisk("./data-csv/melbourne/front-end-melbourne.csv");
-  await perthCsv.toDisk("./data-csv/perth/front-end-perth.csv");
+  //CREATES AND WRITES CSVs FROM DATA
+  const melbourneFECsv = new ObjectsToCsv(frontEndJobsMelbourne);
+  const perthFECsv = new ObjectsToCsv(frontEndJobsPerth);
+
+  await melbourneFECsv.toDisk("./data-csv/melbourne/front-end-melbourne.csv");
+  await perthFECsv.toDisk("./data-csv/perth/front-end-perth.csv");
 
   await browser.close();
 })();
