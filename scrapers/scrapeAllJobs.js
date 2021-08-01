@@ -1,5 +1,5 @@
-import { jobInfoPerPageQuery } from "../queries/jobInfoPerPageQuery";
-import { pageCountQuery } from "../queries/pageCountQuery";
+const jobInfoPerPageQuery = require("../queries/jobInfoPerPageQuery");
+const pageCountQuery = require("../queries/pageCountQuery");
 
 async function getPageCount(page, url) {
   await page.goto(url, {
@@ -18,7 +18,7 @@ async function getJobDataPerPage(page, url) {
   return data;
 }
 
-export async function scrapeAllJobs(page, { type, location }) {
+async function scrapeAllJobs(page, { type, location }) {
   const allJobsArr = [];
 
   const pageCount = await getPageCount(
@@ -35,3 +35,5 @@ export async function scrapeAllJobs(page, { type, location }) {
   }
   return allJobsArr;
 }
+
+module.exports = scrapeAllJobs;

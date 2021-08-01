@@ -1,4 +1,4 @@
-export const pageCountQuery = () => {
+const pageCountQuery = () => {
   const titleElems = document.querySelectorAll('a[data-automation="jobTitle"]');
   const totalJobCount = parseInt(
     document.querySelector('strong[data-automation="totalJobsCount"]').innerText
@@ -8,3 +8,5 @@ export const pageCountQuery = () => {
   const pages = Math.ceil(totalJobCount / perPage);
   return pages;
 };
+
+module.exports = pageCountQuery;
