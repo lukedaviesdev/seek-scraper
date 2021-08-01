@@ -1,56 +1,26 @@
 const puppeteer = require("puppeteer");
-import { jobInfoPerPageQuery } from "./queries/jobInfoPerPageQuery";
-import { pageCountQuery } from "./queries/pageCountQuery";
+const ObjectsToCsv = require("objects-to-csv");
+
+import { scrapeAllJobs } from "./scrapers/scrapeAllJobs";
 
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  async function getPageCount(url) {
-    await page.goto(url, {
-      waitUntil: "networkidle2",
-    });
-    let pages = await page.evaluate(pageCountQuery);
-    return pages;
-  }
-
-  async function getJobDataPerPage(url) {
-    await page.goto(url, {
-      waitUntil: "networkidle2",
-    });
-    let data = await page.evaluate(jobInfoPerPageQuery);
-
-    return data;
-  }
-
-  async function getJobs({ type, location }) {
-    const allJobsArr = [];
-
-    const pageCount = await getPageCount(
-      `https://www.seek.com.au/${type}-web-developer-jobs/in-${location}?salaryrange=100000-999999&salarytype=annual`
-    );
-
-    for (let i = 1; i <= pageCount; i++) {
-      const jobsPerPage = await getJobDataPerPage(
-        `https://www.seek.com.au/${type}-web-developer-jobs/in-${location}?page=${i}&salaryrange=100000-999999&salarytype=annual`
-      );
-      allJobsArr.push(...jobsPerPage);
-    }
-    return allJobsArr;
-  }
-
-  const frontEndJobsPerth = await getJobs({
+  const frontEndJobsPerth = await scrapeAllJobs(page, {
     type: "front-end",
     location: "All-Perth-WA",
   });
-  const frontEndJobsMelbourne = await getJobs({
+  const frontEndJobsMelbourne = await scrapeAllJobs(page, {
     type: "front-end",
     location: "All-Melbourne-VIC",
   });
 
-  //   const backEndJobs = await getJobs("back-end");
-  //   const fullstackJobs = await getJobs("full-stack");
+  const melbourneCsv = new ObjectsToCsv(frontEndJobsMelbourne);
+  const perthCsv = new ObjectsToCsv(frontEndJobsPerth);
 
-  console.log(frontEndJobsMelbourne);
+  await melbourneCsv.toDisk("./data-csv/melbourne/front-end-melbourne.csv");
+  await perthCsv.toDisk("./data-csv/perth/front-end-perth.csv");
+
   await browser.close();
 })();
