@@ -25,6 +25,30 @@ const jobInfoPerPageQuery = () => {
 
   const jobsArr = [];
 
+  const filterBuzzwords = [
+    "c#",
+    "c++",
+    "support",
+    "manager",
+    "angular",
+    "shopify",
+    ".net",
+    "wordPress",
+    "backend",
+    "crm",
+    "drupal",
+    "java",
+    "sitecore",
+    "salesforce",
+    "cobol",
+    "azure",
+    "microsoft power platform",
+    "tester",
+    "designer",
+    "andriod",
+    "python",
+  ];
+
   for (let i = 0; i < perPage; i++) {
     let jobObject = {
       title: "",
@@ -34,9 +58,9 @@ const jobInfoPerPageQuery = () => {
       listedOn: "",
     };
 
-    //can add some QA here on the search results,eg skip jobs with titles containing c++
+    const title = titleElems[i] && titleElems[i].innerHTML;
 
-    jobObject.title = titleElems[i] && titleElems[i].innerHTML;
+    jobObject.title = title;
     jobObject.company = companyElems[i] && companyElems[i].innerHTML;
     jobObject.description =
       shortDescriptionElems[i] && shortDescriptionElems[i].innerText;
