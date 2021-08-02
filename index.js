@@ -26,8 +26,8 @@ const scrapeJobListing = require("./scrapers/scrapeJobListing");
   ];
 
   for (let i = 0; i < jobDataConfig.length; i++) {
-    if (!fs.existsSync(`./data-csv/${city}`)) {
-      fs.mkdirSync(`./data-csv/${city}`, { recursive: true });
+    if (!fs.existsSync(`./data-csv/${jobDataConfig[i].city}`)) {
+      fs.mkdirSync(`./data-csv/${jobDataConfig[i].city}`, { recursive: true });
     }
     const jobsListingArr = await scrapeJobListing(page, {
       type: jobDataConfig[i].type,
