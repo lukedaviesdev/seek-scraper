@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const writeToCsv = require("./helpers/writeToCsv");
+const writeToJSON = require("./helpers/writeToJSON");
 const fs = require("fs");
 const scrapeJobListing = require("./scrapers/scrapeJobListing");
 const sendToS3 = require("./helpers/sendToS3");
@@ -43,8 +44,8 @@ async function masterScraper(props) {
   ];
 
   for (let i = 0; i < jobDataConfig.length; i++) {
-    if (!fs.existsSync(`./data-csv/${jobDataConfig[i].city}`)) {
-      fs.mkdirSync(`./data-csv/${jobDataConfig[i].city}`, { recursive: true });
+    if (!fs.existsSync(`./data-json/${jobDataConfig[i].city}`)) {
+      fs.mkdirSync(`./data-json/${jobDataConfig[i].city}`, { recursive: true });
     }
     const jobsListingArr = await scrapeJobListing(page, {
       type: jobDataConfig[i].type,
@@ -52,13 +53,13 @@ async function masterScraper(props) {
     });
 
     if (env === "local") {
-      writeToCsv({
+      writeToJSON({
         jobsListingArr,
         type: jobDataConfig[i].type,
         city: jobDataConfig[i].city,
       });
     } else if (env === "production") {
-      sendToS3({
+      writeToJSON({
         jobsListingArr,
         type: jobDataConfig[i].type,
         city: jobDataConfig[i].city,
