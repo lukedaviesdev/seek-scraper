@@ -1,3 +1,4 @@
 node_modules/
-data-csv/melbourne/*
-data-csv/perth/*
+data-csv/*
+data-json/*
+.DS_Store
