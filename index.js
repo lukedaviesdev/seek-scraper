@@ -1,3 +1,3 @@
-const masterScraper = require("./masterScraper");
+const localScraper = require("./localScraper");
 
-masterScraper({ env: "local" });
+localScraper();

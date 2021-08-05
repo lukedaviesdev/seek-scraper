@@ -1,12 +1,9 @@
 const puppeteer = require("puppeteer");
-const writeToCsv = require("./helpers/writeToCsv");
 const writeToJSON = require("./helpers/writeToJSON");
 const fs = require("fs");
 const scrapeJobListing = require("./scrapers/scrapeJobListing");
-const sendToS3 = require("./helpers/sendToS3");
 
-async function masterScraper(props) {
-  const env = props.env;
+async function localScraper(props) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -52,22 +49,14 @@ async function masterScraper(props) {
       location: jobDataConfig[i].searchLocation,
     });
 
-    if (env === "local") {
-      writeToJSON({
-        jobsListingArr,
-        type: jobDataConfig[i].type,
-        city: jobDataConfig[i].city,
-      });
-    } else if (env === "production") {
-      writeToJSON({
-        jobsListingArr,
-        type: jobDataConfig[i].type,
-        city: jobDataConfig[i].city,
-      });
-    }
+    writeToJSON({
+      jobsListingArr,
+      type: jobDataConfig[i].type,
+      city: jobDataConfig[i].city,
+    });
   }
 
   await browser.close();
 }
 
-module.exports = masterScraper;
+module.exports = localScraper;
