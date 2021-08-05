@@ -10,21 +10,31 @@ async function masterScraper(props) {
   const page = await browser.newPage();
 
   const jobDataConfig = [
-    // {
-    //   type: "front-end-web-developer",
-    //   city: "perth",
-    //   searchLocation: "All-Perth-WA",
-    // },
-    // {
-    //   type: "front-end-web-developer",
-    //   city: "melbourne",
-    //   searchLocation: "All-Melbourne-VIC",
-    // },
-    // {
-    //   type: "front-end-web-developer",
-    //   city: "sydney",
-    //   searchLocation: "All-Sydney-NSW",
-    // },
+    {
+      type: "front-end-web-developer",
+      city: "perth",
+      searchLocation: "All-Perth-WA",
+    },
+    {
+      type: "full-stack-web-developer",
+      city: "perth",
+      searchLocation: "All-Perth-WA",
+    },
+    {
+      type: "front-end-web-developer",
+      city: "melbourne",
+      searchLocation: "All-Melbourne-VIC",
+    },
+    {
+      type: "full-stack-web-developer",
+      city: "melbourne",
+      searchLocation: "All-Melbourne-VIC",
+    },
+    {
+      type: "front-end-web-developer",
+      city: "sydney",
+      searchLocation: "All-Sydney-NSW",
+    },
     {
       type: "full-stack-web-developer",
       city: "sydney",
