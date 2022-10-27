@@ -2,14 +2,24 @@ const jobInfoPerPageQuery = require("../queries/jobInfoPerPageQuery");
 const pageCountQuery = require("../queries/pageCountQuery");
 
 async function getPageCount(page, url) {
-  await page.goto(url, {
-    waitUntil: "networkidle2",
-  });
-  let pages = await page.evaluate(pageCountQuery);
+  let pages;
+
+  try {
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+    });
+    pages = await page.evaluate(pageCountQuery);
+  } catch (e) {
+    console.error(
+      new Error("ERROR: await page.evaluate(pageCountQuery)", { page, url })
+    );
+    throw e;
+  }
+
   return pages;
 }
 
-async function getJobDataPerPage(page, url) {
+async function scrapeJobAds(page, url) {
   await page.goto(url, {
     waitUntil: "networkidle2",
   });
@@ -20,19 +30,30 @@ async function getJobDataPerPage(page, url) {
 
 async function scrapeJobListing(page, { type, location }) {
   const allJobsArr = [];
-
-  const pageCount = await getPageCount(
-    page,
-    `https://www.seek.com.au/${type}-jobs/in-${location}?salaryrange=100000-999999&salarytype=annual`
-  );
+  let pageCount;
+  try {
+    pageCount = await getPageCount(
+      page,
+      `https://www.seek.com.au/${type}-jobs/in-${location}?salaryrange=100000-999999&salarytype=annual`
+    );
+  } catch (e) {
+    console.error(new Error("ERROR: await getPageCount()"));
+    throw e;
+  }
 
   for (let i = 1; i <= pageCount; i++) {
-    const jobsPerPage = await getJobDataPerPage(
-      page,
-      `https://www.seek.com.au/${type}-jobs/in-${location}?page=${i}&salaryrange=100000-999999&salarytype=annual`
-    );
-    allJobsArr.push(...jobsPerPage);
+    try {
+      const jobsPerPage = await scrapeJobAds(
+        page,
+        `https://www.seek.com.au/${type}-jobs/in-${location}?page=${i}&salaryrange=100000-999999&salarytype=annual`
+      );
+      allJobsArr.push(...jobsPerPage);
+    } catch (e) {
+      console.error(new Error("ERROR: await scrapeJobAds()"));
+      throw e;
+    }
   }
+
   return allJobsArr;
 }
 
