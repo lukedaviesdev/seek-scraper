@@ -1,10 +1,10 @@
 const fs = require("fs");
 
-async function writeToJson({ jobsListingArr, type, city }) {
+async function writeToJson({ jobsListingArr, type, city, date }) {
   const content = JSON.stringify(jobsListingArr);
-  const date = new Date().toISOString().split("T")[0];
+
   fs.writeFile(
-    `./data-json/${city}/${type}_${city}_${date}.json`,
+    `./data/json/${city}/${type}_${city}_${date}.json`,
     content,
     (err) => {
       if (err) {
